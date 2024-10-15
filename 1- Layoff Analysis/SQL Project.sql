@@ -161,7 +161,136 @@ ALTER TABLE layoffs_staging3
 DROP COLUMN row_num;
 
 SELECT *
+FROM layoffs_staging3;
+
+
+
+
+-- EDA Step
+-- we'll do this by answering some questions about the data
+
+-- What's the max laid off and max percentage of laid off?
+SELECT MAX(total_laid_off), MAX(percentage_laid_off)
+FROM layoffs_staging3;
+
+
+-- what's the sum of laid-off of each company in a sescinding order?
+SELECT company, SUM(total_laid_off) AS 'Total Layoff'
 FROM layoffs_staging3
+WHERE total_laid_off IS NOT NULL
+GROUP BY 1;
+
+
+-- what industries hit the most layoff?
+SELECT industry, SUM(total_laid_off) AS 'Total Layoff'
+FROM layoffs_staging3
+WHERE total_laid_off IS NOT NULL
+GROUP BY 1
+ORDER BY SUM(total_laid_off) DESC;
+
+
+-- which country has the most layoff?
+SELECT country, SUM(total_laid_off) AS 'Total Layoff'
+FROM layoffs_staging3
+WHERE total_laid_off IS NOT NULL
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+-- what's the date range we're having in our dataset
+SELECT MIN(`date`), MAX(`date`)
+FROM layoffs_staging3;    -- this sounds like the covid-19 era
+
+
+-- what's the total layoff of each year?
+SELECT YEAR(`date`), SUM(total_laid_off) AS 'Total Layoff'
+FROM layoffs_staging3
+WHERE YEAR(`date`) IS NOT NULL
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+-- what's the total layoff by month?
+SELECT substring(`date`,1, 7), SUM(total_laid_off) AS 'Total Layoff'
+FROM layoffs_staging3
+WHERE YEAR(`date`) IS NOT NULL
+GROUP BY 1
+ORDER BY 1 DESC;
+
+
+-- find the rolling total layoff by month (the cumulative sum of total layoff).
+WITH total_layoff AS(
+SELECT substring(`date`,1, 7) AS `MONTH`, SUM(total_laid_off) AS 'Total Layoff'
+FROM layoffs_staging3
+WHERE substring(`date`,1, 7) IS NOT NULL
+GROUP BY 1
+ORDER BY 1 DESC
+)
+SELECT `MONTH`,`Total Layoff`, SUM(`Total Layoff`) OVER(ORDER BY `MONTH`)
+FROM total_layoff;
+
+
+-- find total layoff for each company by year
+SELECT company, YEAR(`date`), SUM(total_laid_off)
+FROM layoffs_staging3
+GROUP BY 1,2
+HAVING SUM(total_laid_off) IS NOT NULL
+ORDER BY 1 ASC;
+
+
+-- do a ranking of which year does each company laid off most of its employees
+WITH company_year (company, years, total_laid_off)AS(
+SELECT company, YEAR(`date`), SUM(total_laid_off)
+FROM layoffs_staging3
+GROUP BY 1,2
+HAVING SUM(total_laid_off) IS NOT NULL
+ORDER BY 1 ASC
+)
+SELECT *,
+DENSE_RANK() OVER(PARTITION BY years ORDER BY total_laid_off ) AS Ranking
+FROM company_year
+WHERE years IS NOT NULL
+ORDER BY Ranking ASC;
+
+
+-- filter the ranking to get the top 5 companies of total layoff of each year
+WITH company_year (company, years, total_laid_off)AS(
+SELECT company, YEAR(`date`), SUM(total_laid_off)
+FROM layoffs_staging3
+GROUP BY 1,2
+HAVING SUM(total_laid_off) IS NOT NULL
+ORDER BY 1 ASC
+), company_year_ranking AS(
+SELECT *,
+DENSE_RANK() OVER(PARTITION BY years ORDER BY total_laid_off ) AS Ranking
+FROM company_year
+WHERE years IS NOT NULL
+)
+SELECT *
+FROM company_year_ranking
+WHERE Ranking <= 5;
+
+-- find the percentage of laid off employees for each company according to the funds they raised
+SELECT company, AVG(percentage_laid_off) AS layoff_percentage, MAX(funds_raised_millions) AS funds
+FROM layoffs_staging3
+Where percentage_laid_off IS NOT NULL AND funds_raised_millions IS NOT NULL
+GROUP BY 1
+ORDER BY 3 DESC;
+
+
+-- find the percentage of layoff for each stage 
+SELECT DISTINCT stage, ROUND(AVG(percentage_laid_off), 2) AS lay_off_percentage
+FROM layoffs_staging3
+Where percentage_laid_off IS NOT NULL AND stage IS NOT NULL
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+
+
+
+
+
 
 
 
