@@ -41,7 +41,7 @@ The analysis process involved several steps:
 
 ### Key Findings
 - **Trends**: Layoff trends showed an increase in certain industries and stages, indicating possible economic downturns or shifts.
-- **Industry Impact**: The tech industry was notably affected, with significant layoffs in early-stage companies.
+- **Industry Impact**: The Transportation, Education, Fitness and Media industry was notably affected, with significant layoffs in seed-stage companies.
 - **Geographical Insights**: Layoff rates varied significantly by country, reflecting different economic conditions.
 
 ---
