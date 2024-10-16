@@ -40,9 +40,10 @@ The analysis process involved several steps:
 ---
 
 ### Key Findings
-- **Trends**: Layoff trends showed an increase in certain industries and stages, indicating possible economic downturns or shifts.
-- **Industry Impact**: The Transportation, Education, Fitness and Media industry was notably affected, with significant layoffs in seed-stage companies.
-- **Geographical Insights**: Layoff rates varied significantly by country, reflecting different economic conditions.
+- **Layoff Peaks**: The maximum layoffs recorded for a single company reached 12,000, with the consumer industry experiencing the highest overall layoffs.
+- **Geographical Impact**: The United States saw the highest total layoffs across the dataset.
+- **Data Range and Trends**: The data spans from March 2020 to March 2023. While 2022 had the highest layoffs with 160,661, the first three months of 2023 already saw 125,677 layoffs. This suggests that 2023 might surpass 2022 if the trend continues.
+- **Stage-Specific Layoff Rates**: Seed-stage companies faced the highest layoff rates, averaging 0.7. Within this stage, the most affected fields were education, legal, media, fitness, and transportation.
 
 ---
 
